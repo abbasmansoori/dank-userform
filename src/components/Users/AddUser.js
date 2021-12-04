@@ -1,24 +1,38 @@
-import React from "react";
+import React, {useState} from "react";
 import "./AddUser.css";
 import Card from "../UI/Card";
+import DankModal from "../UI/dankModal";
 
 const AddUser = (props) => {
   const [enteredUserName, setEnteredUserName] = React.useState("");
   const [enteredAge, setEnteredAge] = React.useState("");
+  const [error, setError] = useState()
 
   const addUserHandler = (event) => {
     event.preventDefault();
     if(enteredUserName.trim().length === 0 || enteredAge.trim().length === 0) {
-        alert("Please enter valid data");
+        setError({
+            title: "Invalid input",
+            message: "Please enter a valid name and age"
+        })
         return;
     }else if(enteredUserName.trim().length < 3 ) {
-        alert("Your name should be atleast 3 characters long and contain only letters");
+        setError({
+            title: "Invalid input",
+            message: "Please enter a valid name with atleast 3 characters"
+        })
         return;
     }
-    console.log(enteredUserName, enteredAge);
+    props.onAddUser(enteredUserName, enteredAge);
     setEnteredUserName("");
     setEnteredAge("");
   };
+
+  const errorHandler = () => {
+      setError(null);
+  }
+  
+
   const usernameChangeHandler = (event) => {
     setEnteredUserName(event.target.value);
   };
@@ -28,6 +42,8 @@ const AddUser = (props) => {
   };
 
   return (
+      <>
+     {error && <DankModal title={error.title} message={error.message} onConfirm={errorHandler}/>}
     <Card className="input">
       <form onSubmit={addUserHandler}>
         <label htmlFor="username">Username</label>
@@ -47,7 +63,9 @@ const AddUser = (props) => {
         <button type="submit">Add User</button>
       </form>
     </Card>
+    </>
   );
 };
+
 
 export default AddUser;
